@@ -17,7 +17,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 @TeleOp(name = "RED SIDE TELEOP", group = "Teleop")
 public class RedTeleop extends OpMode {
 
-    final double LAUNCHER_TARGET_VELOCITY = 1200;
+    final double LAUNCHER_TARGET_VELOCITY = 1150;
     final double LAUNCHER_MAX_VELOCITY = 6000;
     final double LAUNCHER_MIN_ADJUST = 0;
     final double LAUNCHER_STEP = 50;
@@ -143,7 +143,7 @@ public class RedTeleop extends OpMode {
                 }
                 // Only cancel if b is freshly pressed (avoid accidental cancel)
                 if (gamepad1.b && !gamepad1.y && !gamepad1.x) {
-                    setLauncherVelocity(-1000);
+                    setLauncherVelocity(-1200);
                     launchState = LaunchState.IDLE;
                 }
                 break;

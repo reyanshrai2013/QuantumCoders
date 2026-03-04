@@ -469,7 +469,7 @@ public class CloseSideRedTwelve extends OpMode {
                             new BezierCurve(
                                     new Pose(96.8, 86.030),
                                     new Pose(65.505, 24.728),
-                                    new Pose(136.025, 32.306)
+                                    new Pose(137.025, 32.306)
                             )
                     )
                     .setLinearHeadingInterpolation(Math.toRadians(41), Math.toRadians(0))

@@ -17,7 +17,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 @TeleOp(name = "BLUE SIDE TELEOP", group = "Teleop")
 public class BlueTeleop extends OpMode {
 
-    final double LAUNCHER_TARGET_VELOCITY = 1200;
+    final double LAUNCHER_TARGET_VELOCITY = 1150;
     final double LAUNCHER_MAX_VELOCITY = 6000;
     final double LAUNCHER_MIN_ADJUST = 0;
     final double LAUNCHER_STEP = 50;

@@ -31,7 +31,7 @@ public  class PathsForBlueCloseNineBallAuto {
                 .addPath(
                         new BezierLine(
                                 new Pose(125.6945320197044, 122.38384729064042).mirror(),
-                                new Pose(95.84280662983427, 87).mirror()
+                                new Pose(92.84280662983427, 87).mirror()
                         )
                 )
                 .setLinearHeadingInterpolation(Math.toRadians(180-36), Math.toRadians(180-45))
@@ -40,7 +40,7 @@ public  class PathsForBlueCloseNineBallAuto {
         shootToFirstInkate = follower.pathBuilder()
                 .addPath(
                         new BezierLine(
-                                new Pose(95.84280662983427, 87).mirror(),
+                                new Pose(92.84280662983427, 87).mirror(),
                                 new Pose(132.19211822660097, 84.84236453201973).mirror()
                         )
                 )
