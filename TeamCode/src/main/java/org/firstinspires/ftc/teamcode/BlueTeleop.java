@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.pedroPathing;
+package org.firstinspires.ftc.teamcode;
 
 import static com.qualcomm.robotcore.hardware.DcMotor.ZeroPowerBehavior.BRAKE;
 
@@ -14,10 +14,10 @@ import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.hardware.Servo;
 
 
-@TeleOp(name = "RED SIDE TELEOP", group = "Teleop")
-public class RedTeleop extends OpMode {
+@TeleOp(name = "BLUE SIDE TELEOP", group = "Teleop")
+public class BlueTeleop extends OpMode {
 
-    final double LAUNCHER_TARGET_VELOCITY = 1150;
+    final double LAUNCHER_TARGET_VELOCITY = 1200;
     final double LAUNCHER_MAX_VELOCITY = 6000;
     final double LAUNCHER_MIN_ADJUST = 0;
     final double LAUNCHER_STEP = 50;
@@ -86,7 +86,7 @@ public class RedTeleop extends OpMode {
         limelight = hardwareMap.get(Limelight3A.class, "limelight");
         limelight.start();
         limelight.setPollRateHz(250);
-        limelight.pipelineSwitch(0);
+        limelight.pipelineSwitch(1);
 
         telemetry.addData("Status", "Initialized");
     }
@@ -143,7 +143,7 @@ public class RedTeleop extends OpMode {
                 }
                 // Only cancel if b is freshly pressed (avoid accidental cancel)
                 if (gamepad1.b && !gamepad1.y && !gamepad1.x) {
-                    setLauncherVelocity(-1200);
+                    setLauncherVelocity(-1000);
                     launchState = LaunchState.IDLE;
                 }
                 break;

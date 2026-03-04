@@ -484,7 +484,7 @@ public class CloseSideBlueTwelve extends OpMode {
                                     new Pose(89.227, 109.951).mirror()
                             )
                     )
-                    .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(180-29))
+                    .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(148))
                     .build();
         }
     }
