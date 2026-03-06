@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.pedroPathing.Importantthingsithasrizztrust;
+package org.firstinspires.ftc.teamcode.Importantthingsithasrizztrust;
 //imagine not having rizz with da perfect rgb indicator TUNE ✨
 public class daperfectlighttune {
     public static double red = 0.279;

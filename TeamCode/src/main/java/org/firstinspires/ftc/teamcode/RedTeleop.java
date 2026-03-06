@@ -7,11 +7,16 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 
-import static org.firstinspires.ftc.teamcode.pedroPathing.Importantthingsithasrizztrust.LauncherPIDF.coeffs;
-import static org.firstinspires.ftc.teamcode.pedroPathing.Importantthingsithasrizztrust.daperfectlighttune.*;
+import static org.firstinspires.ftc.teamcode.Importantthingsithasrizztrust.LauncherPIDF.coeffs;
+import static org.firstinspires.ftc.teamcode.Importantthingsithasrizztrust.daperfectlighttune.green;
+import static org.firstinspires.ftc.teamcode.Importantthingsithasrizztrust.daperfectlighttune.orange;
+import static org.firstinspires.ftc.teamcode.Importantthingsithasrizztrust.daperfectlighttune.red;
+import static org.firstinspires.ftc.teamcode.Importantthingsithasrizztrust.daperfectlighttune.white;
+
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.VoltageSensor;
 
 
 @TeleOp(name = "RED SIDE TELEOP", group = "Teleop")
@@ -23,6 +28,10 @@ public class RedTeleop extends OpMode {
     final double LAUNCHER_STEP = 50;
 
     final double VELOCITY_TOLERANCE = 75;
+
+    // Voltage compensation
+    private static final double NOMINAL_VOLTAGE = 12.9;
+    private VoltageSensor battVolt;
 
     // Limelight tracking constants
     final double ROTATION_KP = 0.05;
@@ -49,6 +58,8 @@ public class RedTeleop extends OpMode {
 
     @Override
     public void init() {
+        battVolt = hardwareMap.voltageSensor.iterator().next();
+
         light = hardwareMap.get(Servo.class, "light");
 
         leftFrontDrive  = hardwareMap.get(DcMotor.class, "lf");
@@ -99,13 +110,13 @@ public class RedTeleop extends OpMode {
         telemetry.addData("Valid", r != null && r.isValid());
         telemetry.addData("tx", r == null ? "null" : r.getTx());
         telemetry.addData("Aimed", limelightAimed == 1 ? "LOCKED" : limelightAimed == 2 ? "TRACKING" : "NO TARGET");
-        telemetry.addData(
-                "Launcher At Speed",
-                Math.abs(launcherRight.getVelocity() - launcherTargetVelocity) < VELOCITY_TOLERANCE
-        );
+        telemetry.addData("Launcher At Speed",
+                Math.abs(launcherRight.getVelocity() - launcherTargetVelocity) < VELOCITY_TOLERANCE);
         telemetry.addData("Launch State", launchState);
         telemetry.addData("Target Velocity", launcherTargetVelocity);
+        telemetry.addData("Compensated Velocity", compensate(launcherTargetVelocity));
         telemetry.addData("Actual Velocity", launcherRight.getVelocity());
+        telemetry.addData("Battery Voltage", battVolt.getVoltage());
 
         // ===== DRIVE CONTROL =====
         if (gamepad2.right_bumper) {
@@ -127,21 +138,20 @@ public class RedTeleop extends OpMode {
                 rightFeeder.setPower(0);
                 if (gamepad1.y) {
                     launcherTargetVelocity = LAUNCHER_TARGET_VELOCITY;
-                    setLauncherVelocity(launcherTargetVelocity);
+                    setLauncherVelocity(compensate(launcherTargetVelocity));
                     launchState = LaunchState.SPIN_UP;
                 } else if (gamepad1.x) {
                     launcherTargetVelocity = 1500;
-                    setLauncherVelocity(launcherTargetVelocity);
+                    setLauncherVelocity(compensate(launcherTargetVelocity));
                     launchState = LaunchState.SPIN_UP;
                 }
                 break;
 
             case SPIN_UP:
-                setLauncherVelocity(launcherTargetVelocity);
+                setLauncherVelocity(compensate(launcherTargetVelocity));
                 if (Math.abs(launcherRight.getVelocity() - launcherTargetVelocity) < VELOCITY_TOLERANCE) {
                     launchState = LaunchState.LAUNCH;
                 }
-                // Only cancel if b is freshly pressed (avoid accidental cancel)
                 if (gamepad1.b && !gamepad1.y && !gamepad1.x) {
                     setLauncherVelocity(-1200);
                     launchState = LaunchState.IDLE;
@@ -149,7 +159,7 @@ public class RedTeleop extends OpMode {
                 break;
 
             case LAUNCH:
-                setLauncherVelocity(launcherTargetVelocity);
+                setLauncherVelocity(compensate(launcherTargetVelocity));
                 if (gamepad1.b && !gamepad1.y && !gamepad1.x) {
                     rightFeeder.setPower(0);
                     launchState = LaunchState.IDLE;
@@ -162,28 +172,17 @@ public class RedTeleop extends OpMode {
         boolean lt = gamepad1.left_trigger > 0.1;
         if (lb && !lastLB) {
             launcherTargetVelocity = Math.min(launcherTargetVelocity + LAUNCHER_STEP, LAUNCHER_MAX_VELOCITY);
-            if (launchState != LaunchState.IDLE) setLauncherVelocity(launcherTargetVelocity);
+            if (launchState != LaunchState.IDLE) setLauncherVelocity(compensate(launcherTargetVelocity));
         }
         if (lt && !lastLT) {
             launcherTargetVelocity = Math.max(launcherTargetVelocity - LAUNCHER_STEP, LAUNCHER_MIN_ADJUST);
-            if (launchState != LaunchState.IDLE) setLauncherVelocity(launcherTargetVelocity);
+            if (launchState != LaunchState.IDLE) setLauncherVelocity(compensate(launcherTargetVelocity));
         }
         lastLB = lb;
         lastLT = lt;
 
         // ===== FEEDER =====
-        if (launchState == LaunchState.LAUNCH) {
-            if (gamepad1.right_bumper) {
-                rightFeeder.setPower(0.75);
-            } else if (Math.abs(gamepad1.left_stick_y) > 0.1 || Math.abs(gamepad1.left_stick_x) > 0.1) {
-                rightFeeder.setPower(-0.55);
-            } else if (gamepad1.right_trigger > 0.1) {
-                rightFeeder.setPower(1);
-            } else {
-                rightFeeder.setPower(0);
-            }
-        } else if (launchState == LaunchState.IDLE) {
-            // Still allow manual feeder control even when launcher is off
+        if (launchState == LaunchState.LAUNCH || launchState == LaunchState.IDLE) {
             if (gamepad1.right_bumper) {
                 rightFeeder.setPower(0.75);
             } else if (Math.abs(gamepad1.left_stick_y) > 0.1 || Math.abs(gamepad1.left_stick_x) > 0.1) {
@@ -205,7 +204,6 @@ public class RedTeleop extends OpMode {
         else if (limelightAimed == 2) light.setPosition(orange);
         else                          light.setPosition(white);
 
-        // Single telemetry update at the end of loop
         telemetry.update();
     }
 
@@ -216,7 +214,6 @@ public class RedTeleop extends OpMode {
             double tx = result.getTx();
 
             if (Math.abs(tx) < TARGET_TOLERANCE) {
-                // Perfectly aimed — stop rotating, rumble once
                 limelightAimed = 1;
                 if (!hasRumbledOnLock) {
                     gamepad2.rumbleBlips(2);
@@ -225,7 +222,6 @@ public class RedTeleop extends OpMode {
                 mecanumDrive(-gamepad2.left_stick_y, gamepad2.left_stick_x, 0);
 
             } else {
-                // Tag visible but not centered — fine-tune rotation
                 limelightAimed   = 2;
                 hasRumbledOnLock = false;
 
@@ -238,11 +234,14 @@ public class RedTeleop extends OpMode {
             }
 
         } else {
-            // No tag visible — hand full control back to driver, no spinning
             limelightAimed   = 0;
             hasRumbledOnLock = false;
             mecanumDrive(-gamepad2.left_stick_y, gamepad2.left_stick_x, gamepad2.right_stick_x);
         }
+    }
+
+    private double compensate(double targetVelocity) {
+        return targetVelocity * (NOMINAL_VOLTAGE / battVolt.getVoltage());
     }
 
     private void setLauncherVelocity(double v) {
