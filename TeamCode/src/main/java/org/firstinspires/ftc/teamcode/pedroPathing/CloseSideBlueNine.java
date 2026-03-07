@@ -1,7 +1,7 @@
 package org.firstinspires.ftc.teamcode.pedroPathing;
 
 import static com.qualcomm.robotcore.hardware.DcMotor.ZeroPowerBehavior.BRAKE;
-import static org.firstinspires.ftc.teamcode.pedroPathing.Importantthingsithasrizztrust.LauncherPIDF.coeffs;
+import static org.firstinspires.ftc.teamcode.Importantthingsithasrizztrust.LauncherPIDF.coeffs;
 
 import com.bylazar.configurables.annotations.Configurable;
 import com.bylazar.telemetry.PanelsTelemetry;
@@ -90,6 +90,8 @@ public class CloseSideBlueNine extends OpMode {
         follower.setStartingPose(new Pose(144-125.6945320197044, 122.38384729064042, Math.toRadians(180-36)));
         paths = new PathsForBlueCloseNineBallAuto(follower);
     }
+
+
 
     private void setLauncherVelocity(double v) {
         launcher.setVelocity(v);

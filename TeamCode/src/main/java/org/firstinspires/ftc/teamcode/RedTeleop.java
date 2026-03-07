@@ -7,8 +7,8 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 
-import static org.firstinspires.ftc.teamcode.pedroPathing.Importantthingsithasrizztrust.LauncherPIDF.coeffs;
-import static org.firstinspires.ftc.teamcode.pedroPathing.Importantthingsithasrizztrust.daperfectlighttune.*;
+import static org.firstinspires.ftc.teamcode.Importantthingsithasrizztrust.LauncherPIDF.coeffs;
+import static org.firstinspires.ftc.teamcode.Importantthingsithasrizztrust.daperfectlighttune.*;
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.hardware.Servo;

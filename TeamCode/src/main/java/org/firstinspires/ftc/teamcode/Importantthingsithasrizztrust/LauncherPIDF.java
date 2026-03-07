@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.pedroPathing.Importantthingsithasrizztrust;
+package org.firstinspires.ftc.teamcode.Importantthingsithasrizztrust;
 
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 
